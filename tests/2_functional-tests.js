@@ -33,13 +33,13 @@ suite('Functional Tests', function() {
       test('1 stock', function(done) {
        chai.request(server)
         .get('/api/stock-prices')
-        .query({stock: 'goog'})
+        .query({stock: 'hpe'})
         .end(function(err, res){
           // {"stockData":{"stock":"goog","price":"786.90","likes":1}}
           //complete this one too
           assert.equal(res.status, 200);
           assert.property(res.body, 'stockData');
-          assert.nestedPropertyVal(res.body, 'stockData.stock', 'goog');
+          assert.nestedPropertyVal(res.body, 'stockData.stock', 'hpe');
           assert.nestedProperty(res.body, 'stockData.price');
           assert.nestedPropertyVal(res.body, 'stockData.likes',0);
           done();
@@ -49,13 +49,13 @@ suite('Functional Tests', function() {
       test('1 stock with like', function(done) {
         chai.request(server)
         .get('/api/stock-prices')
-        .query({stock: 'goog', like:'true'})
+        .query({stock: 'hpe', like:'true'})
         .end(function(err, res){
           // {"stockData":{"stock":"goog","price":"786.90","likes":1}}
           //complete this one too
           assert.equal(res.status, 200);
           assert.property(res.body, 'stockData');
-          assert.nestedPropertyVal(res.body, 'stockData.stock', 'goog');
+          assert.nestedPropertyVal(res.body, 'stockData.stock', 'hpe');
           assert.nestedProperty(res.body, 'stockData.price');
           assert.nestedPropertyVal(res.body, 'stockData.likes',1);
           done();
@@ -65,13 +65,13 @@ suite('Functional Tests', function() {
       test('1 stock with like again (ensure likes arent double counted)', function(done) {
         chai.request(server)
         .get('/api/stock-prices')
-        .query({stock: 'goog', like:'true'})
+        .query({stock: 'hpe', like:'true'})
         .end(function(err, res){
           // {"stockData":{"stock":"goog","price":"786.90","likes":1}}
           //complete this one too
           assert.equal(res.status, 200);
           assert.property(res.body, 'stockData');
-          assert.nestedPropertyVal(res.body, 'stockData.stock', 'goog');
+          assert.nestedPropertyVal(res.body, 'stockData.stock', 'hpe');
           assert.nestedProperty(res.body, 'stockData.price');
           assert.nestedPropertyVal(res.body, 'stockData.likes',1);
           done();
@@ -81,7 +81,7 @@ suite('Functional Tests', function() {
       test('2 stocks', function(done) {
         chai.request(server)
         .get('/api/stock-prices')
-        .query({stock: ['goog','msft']})
+        .query({stock: ['hpe','tsla']})
         .end(function(err, res){
           // {"stockData":{"stock":"goog","price":"786.90","likes":1}}
           //complete this one too
@@ -89,11 +89,11 @@ suite('Functional Tests', function() {
           assert.property(res.body, 'stockData');
           assert.isArray(res.body.stockData);
           //checks 1st stock data
-          assert.nestedPropertyVal(res.body, 'stockData[0].stock', 'goog');
+          assert.nestedPropertyVal(res.body, 'stockData[0].stock', 'hpe');
           assert.nestedProperty(res.body, 'stockData[0].price');
           assert.nestedPropertyVal(res.body, 'stockData[0].rel_likes',1);
           //checks 2nd stock
-          assert.nestedPropertyVal(res.body, 'stockData[1].stock', 'msft');
+          assert.nestedPropertyVal(res.body, 'stockData[1].stock', 'tsla');
           assert.nestedProperty(res.body, 'stockData[1].price');
           assert.nestedPropertyVal(res.body, 'stockData[1].rel_likes',-1);
           done();
@@ -103,7 +103,7 @@ suite('Functional Tests', function() {
       test('2 stocks with like', function(done) {
         chai.request(server)
         .get('/api/stock-prices')
-        .query({stock: ['goog','msft'], like: true})
+        .query({stock: ['hpe','tsla'], like: true})
         .end(function(err, res){
           // {"stockData":{"stock":"goog","price":"786.90","likes":1}}
           //complete this one too
@@ -111,11 +111,11 @@ suite('Functional Tests', function() {
           assert.property(res.body, 'stockData');
           assert.isArray(res.body.stockData);
           //checks 1st stock data
-          assert.nestedPropertyVal(res.body, 'stockData[0].stock', 'goog');
+          assert.nestedPropertyVal(res.body, 'stockData[0].stock', 'hpe');
           assert.nestedProperty(res.body, 'stockData[0].price');
           assert.nestedPropertyVal(res.body, 'stockData[0].rel_likes',0);
           //checks 2nd stock
-          assert.nestedPropertyVal(res.body, 'stockData[1].stock', 'msft');
+          assert.nestedPropertyVal(res.body, 'stockData[1].stock', 'tsla');
           assert.nestedProperty(res.body, 'stockData[1].price');
           assert.nestedPropertyVal(res.body, 'stockData[1].rel_likes',0);
           done();

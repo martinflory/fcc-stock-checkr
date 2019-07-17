@@ -33,7 +33,7 @@ function clearTestLikes(done){
       console.log('Trying to clear uninitialized DB');
       return null;
     }else{
-      mongodb.collection('stocks').deleteMany({ stock: { $in: ['goog', 'msft'] } },(err, doc) => {
+      mongodb.collection('stocks').deleteMany({ stock: { $in: ['tsla', 'hpe'] } },(err, doc) => {
           if(err) {
               console.log('could not perform complete delete', err);
               return done(err, false);

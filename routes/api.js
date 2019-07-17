@@ -17,6 +17,16 @@ const CONNECTION_STRING = process.env.DB; //MongoClient.connect(CONNECTION_STRIN
 
 module.exports = function (app) {
 
+  function getCallerIP(request) {
+    var ip = request.headers['x-forwarded-for'] ||
+        request.connection.remoteAddress ||
+        request.socket.remoteAddress ||
+        request.connection.socket.remoteAddress;
+    ip = ip.split(',')[0];
+    ip = ip.split(':').slice(-1); //in case the ip returned in a format: "::ffff:146.xxx.xxx.xxx"
+    return ip;
+  }
+  
   function insertLike(ip,symbol, like, done){
     var db=MDB.get();
     if (like) {
@@ -93,6 +103,8 @@ module.exports = function (app) {
   app.route('/api/stock-prices')
     .get(function (req, res){
     
+    let remoteIP=getCallerIP(req)[0];
+    
     let like=req.query.like=='true'?true:false; 
     
     if (!req.query.stock) {
@@ -101,7 +113,7 @@ module.exports = function (app) {
     } else if (!Array.isArray(req.query.stock)){
         //Es uno solo stock
         //Proceso el stock
-        processStock(req.connection.remoteAddress, req.query.stock, like,(err,symb)=> {
+        processStock(remoteIP, req.query.stock, like,(err,symb)=> {
           if (err) {
             //Si el symbol es desconocido aviso
             if (err=='Unknown symbol') return res.json({message: 'Unknown stock symbol'+req.query.stock})
@@ -113,14 +125,14 @@ module.exports = function (app) {
     } else{
         //Si son 2 stock
         //proceso el primero
-        processStock(req.connection.remoteAddress, req.query.stock[0],like,(err,symb1)=> {
+        processStock(remoteIP, req.query.stock[0],like,(err,symb1)=> {
           if (err) {
             //si el primero es desconocido notifico via json
             if (err=='Unknown symbol') return res.json({message: 'Unknown stock symbol'+ req.query.stock[0]})
             console.log('error: ', err);
           }
           //proceso el segundo
-          processStock(req.connection.remoteAddress, req.query.stock[1],like,(err,symb2)=> {
+          processStock(remoteIP, req.query.stock[1],like,(err,symb2)=> {
             if (err) {
               //si el segundo es desconocido notifico via json
               if (err=='Unknown symbol') return res.json({message: 'Unknown stock symbol'+ req.query.stock[1]})
